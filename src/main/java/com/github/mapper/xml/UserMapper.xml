@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.mapper.UserMapper">
+
+	<resultMap id="BaseResultMap" type="com.github.model.User">
+        <result property="id" column="id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="salt" column="salt"/>
+        <result property="password" column="password"/>
+        <result property="money" column="money"/>
+        <result property="profit" column="profit"/>
+        <result property="type" column="type"/>
+        <result property="level" column="level"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="bankAccount" column="bank_account"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankBranch" column="bank_branch"/>
+        <result property="bankNumber" column="bank_number"/>
+        <result property="parentPhone" column="parent_phone"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="address" column="address"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="profitStart" column="profit_start"/>
+        <result property="profitExpire" column="profit_expire"/>
+        <result property="status" column="status"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="com.github.mapper.UserMapper.columns">
+	<![CDATA[
+		id, avatar, nick_name, real_name, phone, salt, password, money, profit, type, level, area_code, bank_account, bank_name, bank_branch, bank_number, parent_phone, sex, birthday, address, last_login_time, create_time, profit_start, profit_expire, status
+	]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="add" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO t_user (
+        	id, 
+        	avatar, 
+        	nick_name, 
+        	real_name, 
+        	phone, 
+        	salt, 
+        	password, 
+        	money, 
+        	profit, 
+        	type, 
+        	level, 
+        	area_code, 
+        	bank_account, 
+        	bank_name, 
+        	bank_branch, 
+        	bank_number, 
+        	parent_phone, 
+        	sex, 
+        	birthday, 
+        	address, 
+        	last_login_time, 
+        	create_time, 
+        	profit_start, 
+        	profit_expire, 
+        	status
+        ) VALUES (
+        	#{id}, 
+        	#{avatar}, 
+        	#{nickName}, 
+        	#{realName}, 
+        	#{phone}, 
+        	#{salt}, 
+        	#{password}, 
+        	#{money}, 
+        	#{profit}, 
+        	#{type}, 
+        	#{level}, 
+        	#{areaCode}, 
+        	#{bankAccount}, 
+        	#{bankName}, 
+        	#{bankBranch}, 
+        	#{bankNumber}, 
+        	#{parentPhone}, 
+        	#{sex}, 
+        	#{birthday}, 
+        	#{address}, 
+        	#{lastLoginTime}, 
+        	#{createTime}, 
+        	#{profitStart}, 
+        	#{profitExpire}, 
+        	#{status}
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE t_user SET
+	        avatar = #{avatar}, 
+	        nick_name = #{nickName}, 
+	        real_name = #{realName}, 
+	        phone = #{phone}, 
+	        salt = #{salt}, 
+	        password = #{password}, 
+	        money = #{money}, 
+	        profit = #{profit}, 
+	        type = #{type}, 
+	        level = #{level}, 
+	        area_code = #{areaCode}, 
+	        bank_account = #{bankAccount}, 
+	        bank_name = #{bankName}, 
+	        bank_branch = #{bankBranch}, 
+	        bank_number = #{bankNumber}, 
+	        parent_phone = #{parentPhone}, 
+	        sex = #{sex}, 
+	        birthday = #{birthday}, 
+	        address = #{address}, 
+	        last_login_time = #{lastLoginTime}, 
+	        create_time = #{createTime}, 
+	        profit_start = #{profitStart}, 
+	        profit_expire = #{profitExpire}, 
+	        status = #{status}
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM t_user WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="get" resultMap="BaseResultMap">
+		SELECT <include refid="com.github.mapper.UserMapper.columns" />
+	    <![CDATA[
+		    FROM t_user 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+
+	<select id="getList" resultMap="BaseResultMap">
+		SELECT <include refid="com.github.mapper.UserMapper.columns" /> FROM t_user ORDER BY money DESC
+	</select>
+
+	<select id="getUserList" resultMap="BaseResultMap">
+		SELECT <include refid="com.github.mapper.UserMapper.columns" /> FROM t_user
+        <where>
+            <if test="parentPhone != null and parentPhone != ''">AND parent_phone = #{parentPhone}</if>
+            <if test="phone != null and phone != ''">AND phone LIKE CONCAT(#{phone}, "%")</if>
+        </where>
+        ORDER BY money DESC
+	</select>
+	<!--***************************************************************-->
+
+    <select id="getByPhone" resultMap="BaseResultMap">
+        SELECT <include refid="com.github.mapper.UserMapper.columns" />
+        <![CDATA[
+		    FROM t_user
+	        WHERE
+		        phone = #{phone}
+	    ]]>
+    </select>
+
+
+    <select id="getShareListByCode" resultMap="BaseResultMap">
+        SELECT <include refid="com.github.mapper.UserMapper.columns" />
+        <![CDATA[
+		    FROM t_user
+	        WHERE
+		        area_code = #{areaCode} and profit_start <= curdate() and profit_expire >= curdate()
+	    ]]>
+    </select>
+
+    <select id="getChildList90Money" resultType="java.lang.Integer">
+          select ifnull(sum(t2.type-1),0) from t_user t1 join t_order t2 on t1.id = t2.user_id
+          where t1.parent_phone=#{parentPhone} and t1.create_time >= CURDATE() - 90
+    </select>
+
+    <select id="getChildDirectors180" resultType="java.lang.Integer">
+          select count(*) from t_user t1
+          where t1.parent_phone=#{parentPhone} and t1.create_time >= CURDATE() - 180 and t1.level = 2
+    </select>
+
+    <select id="getManagerDownList" resultMap="BaseResultMap">
+          select * from t_user t1 where t1.level > 1
+    </select>
+
+</mapper>
