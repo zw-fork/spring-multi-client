@@ -1,7 +1,7 @@
 # spring
 # spring-cloud
 # spring-boot
-# sharing-jdbc
+# sharding-jdbc
 # druid
 
 数据库脚本 resources/t_course_type.sql
