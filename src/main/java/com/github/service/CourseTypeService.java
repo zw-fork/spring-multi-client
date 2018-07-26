@@ -4,9 +4,13 @@ import com.github.mapper.BaseMapper;
 import com.github.mapper.CourseTypeMapper;
 import com.github.model.CourseType;
 import com.github.pagehelper.PageHelper;
+import com.github.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,9 +19,27 @@ public class CourseTypeService extends BaseService<CourseType>{
     @Autowired
     private CourseTypeMapper courseTypeDao;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     protected BaseMapper getBaseDao() {
         return courseTypeDao;
+    }
+
+//    public void addDatas(){
+//        CourseType courseType = new CourseType();
+//        courseType.setTypeName(11111);
+//        redisTemplate.boundListOps("object-list").leftPush(courseType);
+//    }
+
+    @Cacheable(value= "objectCache" , key ="#root.targetClass")
+    public List<CourseType> addDatas(){
+        CourseType courseType = new CourseType();
+        courseType.setTypeName(11111);
+        List<CourseType> list = new ArrayList<>();
+        list.add(courseType);
+        return list;
     }
 
 
@@ -35,7 +57,7 @@ public class CourseTypeService extends BaseService<CourseType>{
         return selectTypeByCondition(courseType,page,pageSize);
     }
 
-//    @Cacheable(value= Constants.FRONT_CACHE_NAME , key = "('CourseTypeService:').concat(#root.method.name).concat('：').concat(#page)")
+    @Cacheable(value= "objectCache" , key = "('CourseTypeService:').concat(#root.method.name).concat('：').concat(#page)")
     public List<CourseType> selectTypeByCondition(CourseType courseType,Integer page,Integer pageSize){
         if(courseType != null){
             courseType.setStatus(225);

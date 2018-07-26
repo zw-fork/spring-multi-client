@@ -6,14 +6,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 测试
- * Created by leolin on 12/27/2017.
- */
+* 测试
+* Created by leolin on 12/27/2017.
+*/
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)  // 指向到 根目录下的Application
 public class CourseTypeTest {
@@ -21,6 +23,14 @@ public class CourseTypeTest {
     @Autowired
     private CourseTypeService courseTypeService;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
+
+    @Test
+    public void test34114(){
+        redisTemplate.delete(redisTemplate.keys("objectCache*"));
+    }
 
     /**
      * 插入分片测试
@@ -63,13 +73,13 @@ public class CourseTypeTest {
         CourseType courseType = new CourseType();
 
         List<CourseType> list1 = courseTypeService.selectTypeByCondition(courseType,1,50);
-//        List<CourseType> list2 = courseTypeService.selectTypeByCondition(courseType,1,4);
+        List<CourseType> list2 = courseTypeService.selectTypeByCondition(courseType,1,4);
 //        CacheManager ;
 
         for(CourseType ct : list1) {
             System.out.println(ct.toString());
         }
-//        System.out.println(list2.toString());
+        System.out.println(list2.toString());
 
     }
 
@@ -86,5 +96,11 @@ public class CourseTypeTest {
 
         System.out.println(list2.toString());
         System.out.println(System.currentTimeMillis());
+    }
+
+
+    @Test
+    public void test344(){
+        courseTypeService.addDatas();
     }
 }
