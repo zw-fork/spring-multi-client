@@ -43,21 +43,21 @@ import com.github.util.CurrentUser;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
-@RestController
+@Controller
 @RequestMapping("user")
 public class UserController {
 
 	@Resource private UserService userService;
 
+    @ResponseBody
     @RequestMapping("get")
 	public User getUser(String name){
 
@@ -66,6 +66,30 @@ public class UserController {
         user.setPhone("15612341234");
         return user;
     }
-    
+
+
+    @RequestMapping("userList")
+    public String userList(ModelMap modelMap){
+        List<User> list = new ArrayList<>();
+
+        User user1 = new User();
+        user1.setAreaCode(1111);
+        list.add(user1);
+
+        User user2 = new User();
+        user2.setAreaCode(2222);
+        list.add(user2);
+
+        modelMap.addAttribute("name","测试");
+        modelMap.addAttribute("list",list);
+        return "userList";
+    }
+
+
+    @RequestMapping("deal")
+    public String deal(String areaCode,ModelMap modelMap){
+        modelMap.addAttribute("areaCode",areaCode);
+        return "deal";
+    }
 }
 

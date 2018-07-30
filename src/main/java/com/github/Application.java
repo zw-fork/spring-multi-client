@@ -18,17 +18,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableHystrixDashboard  // 仪表盘
 public class Application {
 
-    /**
-     * 目前还是只能放在这里。   默认使用ribbon集群负载的时候使用
-     * @return
-     */
-//    @Bean
-//    @LoadBalanced
-//    RestTemplate restTemplate() {
-//        return new RestTemplate();
-//    }
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
