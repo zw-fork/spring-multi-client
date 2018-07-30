@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/asset/css/userList.css}"/>
+    <title></title>
+</head>
+<body>
+
+    hello -  '${name}'
+<input th:value="${name}">
+
+<br/>
+
+    <table class="table table-hover">
+        <legend>
+            <strong>用户列表</strong>
+        </legend>
+        <thead>
+        <tr>
+            <th>用户编号</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${list}">
+            <th scope="row" th:text="${user.areaCode}"></th>
+            <td><a th:href="@{/user/deal(areaCode=${user.areaCode})}" th:text="${user.areaCode}" target="_blank"></a></td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
