@@ -196,21 +196,53 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>client-api-hello</groupId>
+            <artifactId>client-api-hello</artifactId>
+            <version>1.00</version>
+        </dependency>
     </dependencies>
 
 
-    <!--<repositories>-->
-    <!--<repository>-->
-    <!--<id>central</id>-->
-    <!--<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
-    <!--</repository>-->
-    <!--</repositories>-->
-    <!--<pluginRepositories>-->
-    <!--<pluginRepository>-->
-    <!--<id>central</id>-->
-    <!--<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
-    <!--</pluginRepository>-->
-    <!--</pluginRepositories>-->
+    <repositories>
+        <repository>
+        <id>central</id>
+        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+
+        <repository>
+        <id>nexus-t</id>
+        <url>http://nexus.test.basicedu.chaoxing.com/repository/3rd/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+        <id>central</id>
+        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </pluginRepository>
+
+        <pluginRepository>
+        <id>nexus-t</id>
+        <url>http://nexus.test.basicedu.chaoxing.com/repository/3rd/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+
+    <!--<distributionManagement>-->
+        <!--<snapshotRepository>-->
+            <!--<id>nexus</id>  &lt;!&ndash; 此id值要跟/usr/local/maven/conf/settings.xml文件中的名字一定要对应上 &ndash;&gt;-->
+            <!--<name>Nexus Snapshot</name>-->
+            <!--<url>http://nexus.test.basicedu.chaoxing.com/repository/3rd/</url>-->
+        <!--</snapshotRepository>-->
+        <!--<site>-->
+            <!--<id>nexus</id>-->
+            <!--<name>Nexus Sites</name>-->
+            <!--<url>dav:http://nexus.test.basicedu.chaoxing.com/repository/3rd/</url>-->
+        <!--</site>-->
+    <!--</distributionManagement>-->
 
     <build>
         <resources>
