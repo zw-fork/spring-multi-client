@@ -134,11 +134,11 @@
             <pattern>${FILE_LOG_PATTERN}</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>debug</level>
         </filter>
     </appender>
 
-    <root level="INFO">
+    <root level="debug">
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

@@ -6,6 +6,7 @@ import com.github.model.CourseType;
 import com.github.pagehelper.PageHelper;
 import com.github.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -57,8 +58,18 @@ public class CourseTypeService extends BaseService<CourseType>{
         return selectTypeByCondition(courseType,page,pageSize);
     }
 
-    @Cacheable(value= "objectCache" , key = "('CourseTypeService:').concat(#root.method.name).concat('：').concat(#page)")
+    @Cacheable(value= "objectCache" , key = "('CourseTypeService:').concat(#root.method.name).concat(':').concat(#page)")
     public List<CourseType> selectTypeByCondition(CourseType courseType,Integer page,Integer pageSize){
+        if(courseType != null){
+            courseType.setStatus(225);
+            PageHelper.startPage(page, pageSize);
+            return courseTypeDao.selectByCondition(courseType);
+        }
+        return null;
+    }
+
+    @CacheEvict(value= "objectCache" , key = "('CourseTypeService:').concat('selectTypeByCondition').concat(':').concat(#page)")
+    public List<CourseType> upTypeByCondition(CourseType courseType,Integer page,Integer pageSize){
         if(courseType != null){
             courseType.setStatus(225);
             PageHelper.startPage(page, pageSize);

@@ -197,6 +197,25 @@
             <scope>test</scope>
         </dependency>
 
+
+        <!--  mq -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <!--<version>3.6.0</version>-->
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
         <dependency>
             <groupId>client-api-hello</groupId>
             <artifactId>client-api-hello</artifactId>

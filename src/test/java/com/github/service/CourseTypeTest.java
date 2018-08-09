@@ -2,15 +2,26 @@ package com.github.service;
 
 import com.github.Application;
 import com.github.model.CourseType;
+import io.lettuce.core.RedisFuture;
+import io.lettuce.core.ScriptOutputType;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
 * 测试
@@ -72,14 +83,17 @@ public class CourseTypeTest {
     public void testQueryPage(){
         CourseType courseType = new CourseType();
 
-        List<CourseType> list1 = courseTypeService.selectTypeByCondition(courseType,1,50);
-        List<CourseType> list2 = courseTypeService.selectTypeByCondition(courseType,1,4);
+//        List<CourseType> list1 = courseTypeService.selectTypeByCondition(courseType,1,50);
+        List<CourseType> list2 = courseTypeService.selectTypeByCondition(courseType,1,50);
+
+
+        List<CourseType> list3 = courseTypeService.upTypeByCondition(courseType,1,50);
 //        CacheManager ;
 
-        for(CourseType ct : list1) {
+        for(CourseType ct : list3) {
             System.out.println(ct.toString());
         }
-        System.out.println(list2.toString());
+//        System.out.println(list2.toString());
 
     }
 
@@ -102,5 +116,68 @@ public class CourseTypeTest {
     @Test
     public void test344(){
         courseTypeService.addDatas();
+    }
+
+
+    @Test
+    public void testRedisExecute(){
+        String lockKey = "123";
+        String lockValue = "123";
+        String UNLOCK_LUA;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("if redis.call(\"get\",KEYS[1]) == ARGV[1] ");
+        sb.append("then ");
+        sb.append("    return redis.call(\"del\",KEYS[1]) ");
+        sb.append("else ");
+        sb.append("    return 0 ");
+        sb.append("end ");
+        UNLOCK_LUA = sb.toString();
+
+        redisTemplate.execute(new RedisCallback<Boolean>() {
+            @Override
+            public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+                Object nativeConnection = connection.getNativeConnection();
+                String result = null;
+
+                Object[] keys = new Object[]{lockKey.getBytes()};
+
+                if (nativeConnection instanceof RedisAsyncCommands) {
+                    RedisAsyncCommands commands = ((RedisAsyncCommands) nativeConnection).getStatefulConnection().async();
+//                    RedisFuture future = commands.del(lockKey.getBytes());
+                    // lua 函数返回的值为数值类型。
+                    RedisFuture future = commands.eval(UNLOCK_LUA, ScriptOutputType.INTEGER, keys, lockValue.getBytes());
+
+                    future.handle(new BiFunction<String, Throwable, String>() {
+                        @Override
+                        public String apply(String value, Throwable throwable) {
+                            if(throwable != null) {
+                                return "default value";
+                            }
+                            return value;
+                        }
+                    }).thenAccept(new Consumer<String>() {
+                        @Override
+                        public void accept(String value) {
+                            System.out.println("Got value: " + value);
+                        }
+                    });
+
+                    result = future.getError();
+                    Object obj = null;
+                    try {
+                        obj = future.get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 直接删除key的值。
+                    //commands.del(lockKey);
+                }
+                return false;
+            }
+        });
     }
 }
